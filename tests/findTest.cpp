@@ -1,27 +1,39 @@
 #include "../src/find.h"
+#include <utility>
+
 #include <gmock/gmock.h>
 
 TEST(StringFinder, FindsAtStartOfStirng) {
 	auto result = find_longest_common_substring("Hello", "HelloWorld");
-	ASSERT_EQ(result, "Hello");
+	auto expected = std::pair<int, int>(0, 5);
+
+	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, FindsEqualStrings) {
 	auto result = find_longest_common_substring("Hello", "Hello");
-	ASSERT_EQ(result, "Hello");
+	auto expected = std::pair<int, int>(0, 5);
+
+	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, FindsInMiddle) {
 	auto result = find_longest_common_substring("AAABBAAA", "ABBA");
-	ASSERT_EQ(result, "ABBA");
+	auto expected = std::pair<int, int>(2, 6);
+
+	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, MatchDoesNotExist) {
 	auto result = find_longest_common_substring("hello", ":(");
-	ASSERT_EQ(result, "");
+	auto expected = std::pair<int, int>(0, 0);
+
+	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, MatchOneStringEmpty) {
 	auto result = find_longest_common_substring("hello", "");
-	ASSERT_EQ(result, "");
+	auto expected = std::pair<int, int>(0, 0);
+
+	ASSERT_EQ(result, expected);
 }

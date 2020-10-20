@@ -42,7 +42,11 @@ static std::optional<std::pair<int, int>> get_largest_index(const std::vector<st
 	std::optional<std::pair<int, int>> max_index;
 	for (int i = 0; i < table.size(); i++) {
 		for (int j = 0; j < table.at(i).size(); j++) {
-			if (!max_index.has_value()) {
+			// We won't take a value if there aren't any matching characters
+			if (!max_index.has_value() && table.at(i).at(j) == 0) {
+				continue;
+			} else if (!max_index.has_value()) {
+				// We will, however, take one, if there is one, and we haven't stored one yet
 				max_index = std::pair<int, int>(i, j);
 				continue;
 			}
@@ -59,20 +63,21 @@ static std::optional<std::pair<int, int>> get_largest_index(const std::vector<st
 }
 
 /**
- * Find the longest common substring between the two given strings
+ * Find the longest common substring between the two given strings.
  * @param a The first string to check
  * @param b The second string to check
- * @return const std::string The longest common substring between the two strings, including the empty string
+ * @return const std::pair<int, int> The range at which this substring exists, including the start, excluding the end.
+ * 									 If no match is found, the range will be <0, 0>
  */
-const std::string find_longest_common_substring(const std::string &a, const std::string &b) {
+std::pair<int, int> find_longest_common_substring(const std::string &a, const std::string &b) {
 	auto table = make_substring_table(a, b);
 	auto max_index = get_largest_index(table);
 	if (!max_index.has_value()) {
-		return "";
+		return std::pair<int, int>(0, 0);
 	}
 
 	int a_end = max_index.value().first;
 	int len = table.at(a_end).at(max_index.value().second);
 
-	return a.substr(a_end - (len - 1), len);
+	return std::pair<int, int>(a_end - (len - 1), a_end + 1);
 }

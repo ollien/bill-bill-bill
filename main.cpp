@@ -1,3 +1,4 @@
+#include "src/ImageProcessor.h"
 #include <iostream>
 
 #include <CImg.h>
@@ -14,7 +15,7 @@ int main(int argc, char *argv[]) {
 		for (int j = 0; j < image.height(); j++) {
 			int total = 0;
 			for (int c = 0; c < image.spectrum(); c++) {
-			total += image(i, j, c);
+				total += image(i, j, c);
 			}
 
 			double avg = total / image.spectrum();
