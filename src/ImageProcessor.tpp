@@ -12,48 +12,45 @@
 template <typename T>
 cimg_library::CImg<T> ImageProcessor<T>::morph_image(const std::string &specifier) const {
 	auto ranges = this->get_base_string_ranges(specifier);
-	auto total_length = std::accumulate(ranges.cbegin(), ranges.cend(), 0, [](int total, std::pair<int, int> range) {
-		return total + (range.second - range.first);
-	});
 
-	auto new_height = this->base_image.height() * total_length / this->base_string.length();
+	return this->splice_image(ranges);
+}
+
+template <typename T>
+cimg_library::CImg<T> ImageProcessor<T>::splice_image(std::vector<std::pair<int, int>> string_ranges) const {
+	auto total_length =
+	    std::accumulate(string_ranges.cbegin(), string_ranges.cend(), 0,
+	                    [](int total, std::pair<int, int> range) { return total + (range.second - range.first); });
+
+	int new_height = (this->base_image.height() * total_length) / this->base_string.length();
 	cimg_library::CImg<T> res(this->base_image.width(), new_height, 1, this->base_image.spectrum());
-	auto write_height_cursor = 0;
-	std::cout << this->base_image.width() << " x " << new_height << std::endl;
-	for (auto range : ranges) {
-		std::cout << range.first << " " << range.second << std::endl;
-		std::pair<int, int> read_range(
-		    // these futzings need to be adjusted ... off by ones are annoying as hell
-		    // Maybe I just have to break prematurely???
-		    std::ceil(1.0 * (this->base_image.height() - 1) * range.first / this->base_string.length()),
-		    std::floor(1.0 * (this->base_image.height() - 1) * range.second / this->base_string.length()));
 
-		std::cout << read_range.first << " " << read_range.second << std::endl;
-		std::cout << write_height_cursor << std::endl;
+	auto write_height_cursor = 0;
+	for (auto string_range : string_ranges) {
+		std::pair<int, int> read_range(this->get_read_cursor_position(string_range.first),
+		                               this->get_read_cursor_position(string_range.second));
+
 		for (int i = read_range.first; i < read_range.second; (i++, write_height_cursor++)) {
+			// We can't write beyond the bounds of the new image. This can happen in cases where the ranges do not
+			// evenly divide the final image.
+			if (write_height_cursor >= new_height) {
+				break;
+			}
+
 			for (int j = 0; j < this->base_image.width(); j++) {
-				// std::cout << j << ", " << i << "(cursor=" << write_height_cursor << ")" << std::endl;
 				for (int c = 0; c < this->base_image.spectrum(); c++) {
 					res(j, write_height_cursor, c) = this->base_image(j, i, c);
 				}
 			}
 		}
-		/*
-		for (int i = 0; i < this->base_image.width(); (i++, write_height_cursor++)) {
-		    std::pair<int, int> read_range(this->base_image.height() * range.first / this->base_string.length(),
-		                                   this->base_image.height() * range.second / this->base_string.length());
-
-		    for (int j = read_range.first; j < read_range.second; j++) {
-		        for (int c = 0; c < this->base_image.spectrum(); c++) {
-		            res(i, write_height_cursor, c) = this->base_image(i, j, c);
-		        }
-		    }
-		}
-		*/
-		std::cout << write_height_cursor << std::endl << std::endl;
 	}
 
 	return res;
+}
+
+template <typename T>
+int ImageProcessor<T>::get_read_cursor_position(int position) const {
+	return std::ceil(1.0 * this->base_image.height() * position / this->base_string.length());
 }
 
 /**
