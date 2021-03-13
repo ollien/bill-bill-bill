@@ -32,35 +32,61 @@ static std::vector<std::vector<int>> make_substring_table(const std::string &a, 
 }
 
 /**
- * Get the index of the largest value in a 2D vector
+ * Given a 2D vector, get the index of the maximum element in each row. Each row must have a length of > 0.
+ *
+ * @tparam T The type in the vector.
+ * @param table The substring table
+ * @return std::vector<int> A vector of the maximum index in each row
+ * @throws std::invalid_argument Thrown if any of the rows are of length 0.
+ */
+template <typename T>
+static std::vector<int> get_max_index_in_rows(const std::vector<std::vector<T>> &table) {
+	std::vector<int> max_column_in_rows;
+	max_column_in_rows.reserve(table.size());
+	std::transform(table.cbegin(), table.cend(), std::back_inserter(max_column_in_rows), [](const std::vector<T> &row) {
+		auto max_iterator = std::max_element(row.cbegin(), row.cend());
+		if (max_iterator == row.cend()) {
+			throw std::invalid_argument("cannot find maximum index if of zero length row");
+		}
+
+		return std::distance(row.cbegin(), max_iterator);
+	});
+
+	return max_column_in_rows;
+}
+
+/**
+ * Get the index of the largest value in a substring table, so long as its value != 0
  *
  * @tparam T The type in the vector - must be comparable
  * @param table The 2D vector to check
- * @return std::optional<std::pair<int, int>> The index of the maximum element
+ * @return std::optional<std::pair<int, int>> The index of the maximum element, or an empty optional if the value is
+ * zero
  */
 template <typename T>
 static std::optional<std::pair<int, int>> get_largest_index(const std::vector<std::vector<T>> &table) {
-	std::optional<std::pair<int, int>> max_index;
-	for (int i = 0; i < table.size(); i++) {
-		for (int j = 0; j < table.at(i).size(); j++) {
-			// We won't take a value if there aren't any matching characters
-			if (!max_index.has_value() && table.at(i).at(j) == 0) {
-				continue;
-			} else if (!max_index.has_value()) {
-				// We will, however, take one, if there is one, and we haven't stored one yet
-				max_index = std::pair<int, int>(i, j);
-				continue;
-			}
-
-			int candidate = table.at(i).at(j);
-			int current_max = table.at(max_index.value().first).at(max_index.value().second);
-			if (candidate > current_max) {
-				max_index = std::pair<int, int>(i, j);
-			}
-		}
+	if (table.size() == 0 || (table.size() > 0 && table.at(0).size() == 0)) {
+		return std::nullopt;
 	}
 
-	return max_index;
+	auto max_column_in_row = get_max_index_in_rows(table);
+	auto max_row_iterator = std::max_element(
+		max_column_in_row.cbegin(),
+		max_column_in_row.cend(),
+		[&table, row_index = 0](int max_column_index_1, int max_column_index_2) mutable {
+			auto res = table.at(row_index).at(max_column_index_1) < table.at(row_index + 1).at(max_column_index_2);
+			row_index++;
+			return res;
+		});
+
+	auto max_row = std::distance(max_column_in_row.cbegin(), max_row_iterator);
+	auto max_col = max_column_in_row.at(max_row);
+	// If there's no substring length, return an empty optional.
+	if (table.at(max_row).at(max_col) == 0) {
+		return std::nullopt;
+	}
+
+	return std::make_pair(max_row, max_col);
 }
 
 /**
