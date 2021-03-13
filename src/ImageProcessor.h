@@ -19,7 +19,7 @@ class ImageProcessor {
 	cimg_library::CImg<T> base_image;
 
 	std::vector<std::pair<int, int>> get_base_string_ranges(const std::string &specifier) const;
-	cimg_library::CImg<T> splice_image(std::vector<std::pair<int, int>> string_ranges) const;
+	cimg_library::CImg<T> splice_image(const std::vector<std::pair<int, int>> &string_ranges) const;
 	int get_read_cursor_position(int position) const;
 };
 

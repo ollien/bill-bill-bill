@@ -9,6 +9,12 @@
 
 #include "find.h"
 
+/**
+ * Morph the image into one that takes the specifier string, and uses substring positions to take portions of the image.
+ * @tparam T The type of data stored in the CImg
+ * @param specifier Ths specifier string that determines what parts of the string to splice
+ * @return cimg_library::CImg<T> The morphed image
+ */
 template <typename T>
 cimg_library::CImg<T> ImageProcessor<T>::morph_image(const std::string &specifier) const {
 	auto ranges = this->get_base_string_ranges(specifier);
@@ -16,8 +22,14 @@ cimg_library::CImg<T> ImageProcessor<T>::morph_image(const std::string &specifie
 	return this->splice_image(ranges);
 }
 
+/**
+ * Splice the image into parts based on the given ranges from the specified string
+ * @tparam T The type to store in the output image
+ * @param string_ranges The ranges to splice
+ * @return cimg_library::CImg<T> The spliced image
+ */
 template <typename T>
-cimg_library::CImg<T> ImageProcessor<T>::splice_image(std::vector<std::pair<int, int>> string_ranges) const {
+cimg_library::CImg<T> ImageProcessor<T>::splice_image(const std::vector<std::pair<int, int>> &string_ranges) const {
 	auto total_length =
 		std::accumulate(string_ranges.cbegin(), string_ranges.cend(), 0, [](int total, std::pair<int, int> range) {
 			return total + (range.second - range.first);
