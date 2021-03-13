@@ -1,5 +1,3 @@
-#include "find.h"
-
 #include <cmath>
 #include <execution>
 #include <iostream>
@@ -8,6 +6,8 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+
+#include "find.h"
 
 template <typename T>
 cimg_library::CImg<T> ImageProcessor<T>::morph_image(const std::string &specifier) const {
@@ -19,16 +19,18 @@ cimg_library::CImg<T> ImageProcessor<T>::morph_image(const std::string &specifie
 template <typename T>
 cimg_library::CImg<T> ImageProcessor<T>::splice_image(std::vector<std::pair<int, int>> string_ranges) const {
 	auto total_length =
-	    std::accumulate(string_ranges.cbegin(), string_ranges.cend(), 0,
-	                    [](int total, std::pair<int, int> range) { return total + (range.second - range.first); });
+		std::accumulate(string_ranges.cbegin(), string_ranges.cend(), 0, [](int total, std::pair<int, int> range) {
+			return total + (range.second - range.first);
+		});
 
 	int new_height = (this->base_image.height() * total_length) / this->base_string.length();
 	cimg_library::CImg<T> res(this->base_image.width(), new_height, 1, this->base_image.spectrum());
 
 	auto write_height_cursor = 0;
 	for (auto string_range : string_ranges) {
-		std::pair<int, int> read_range(this->get_read_cursor_position(string_range.first),
-		                               this->get_read_cursor_position(string_range.second));
+		std::pair<int, int> read_range(
+			this->get_read_cursor_position(string_range.first),
+			this->get_read_cursor_position(string_range.second));
 
 		for (int i = read_range.first; i < read_range.second; (i++, write_height_cursor++)) {
 			// We can't write beyond the bounds of the new image. This can happen in cases where the ranges do not
@@ -58,8 +60,9 @@ int ImageProcessor<T>::get_read_cursor_position(int position) const {
  * @param ranges The vector of ranges to sort
  */
 static void sort_range_vector(std::vector<std::pair<int, int>> &ranges) {
-	std::sort(ranges.begin(), ranges.end(),
-	          [](std::pair<int, int> a, std::pair<int, int> b) { return a.first < b.first; });
+	std::sort(ranges.begin(), ranges.end(), [](std::pair<int, int> a, std::pair<int, int> b) {
+		return a.first < b.first;
+	});
 }
 
 /**
@@ -86,7 +89,7 @@ std::vector<std::pair<int, int>> ImageProcessor<T>::get_base_string_ranges(const
 		auto base_string_substr = this->base_string.substr(range.first, range.second - range.first);
 		auto pos_in_remaining = remaining.find(base_string_substr);
 		remaining =
-		    remaining.substr(0, pos_in_remaining) + remaining.substr(pos_in_remaining + base_string_substr.length());
+			remaining.substr(0, pos_in_remaining) + remaining.substr(pos_in_remaining + base_string_substr.length());
 	}
 
 	sort_range_vector(ranges);

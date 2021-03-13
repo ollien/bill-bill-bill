@@ -1,4 +1,5 @@
 #include "find.h"
+
 #include <algorithm>
 #include <iostream>
 #include <numeric>
@@ -22,7 +23,7 @@ static std::vector<std::vector<int>> make_substring_table(const std::string &a, 
 	for (int i = 0; i < a.length(); i++) {
 		for (int j = 0; j < b.length(); j++) {
 			if (a.at(i) == b.at(j)) {
-				table.at(i).at(j) = j > 0 and i > 0 ? table.at(i - 1).at(j - 1) + 1 : 1;
+				table.at(i).at(j) = j > 0 && i > 0 ? table.at(i - 1).at(j - 1) + 1 : 1;
 			}
 		}
 	}

@@ -1,7 +1,11 @@
-UseTab: ForIndentation
-BreakBeforeBraces: Attach
-ColumnLimit: 120
-TabWidth: 4
+BasedOnStyle: Google
 IndentWidth: 4
-AlwaysBreakTemplateDeclarations: Yes
+TabWidth: 4
+UseTab: Always
+ColumnLimit: 120
+AccessModifierOffset: -3
 AllowShortFunctionsOnASingleLine: None
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: AlwaysBreak
+AllowAllArgumentsOnNextLine: false

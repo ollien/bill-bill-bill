@@ -1,20 +1,20 @@
 #ifndef IMAGEPROCESSOR_H
 #define IMAGEPROCESSOR_H
 
-#include <string>
-
 #include <CImg.h>
+
+#include <string>
 
 template <typename T>
 class ImageProcessor {
-  public:
+ public:
 	ImageProcessor<T>(const cimg_library::CImg<T> &base_image, const std::string &base_string)
-	    : base_image(base_image), base_string(base_string) {
+		: base_image(base_image), base_string(base_string) {
 	}
 
 	cimg_library::CImg<T> morph_image(const std::string &specifier) const;
 
-  private:
+ private:
 	std::string base_string;
 	cimg_library::CImg<T> base_image;
 
