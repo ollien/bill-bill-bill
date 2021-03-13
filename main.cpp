@@ -4,25 +4,17 @@
 #include <CImg.h>
 
 int main(int argc, char *argv[]) {
-	if (argc != 2) {
-		std::cerr << "Usage: ./bill-bill-bill infile" << std::endl;
+	if (argc != 4) {
+		std::cerr << "Usage: ./bill-bill-bill infile base_string meme_string" << std::endl;
 		return 1;
 	}
 
 	const std::string_view infile(argv[1]);
+	const std::string_view base_string(argv[2]);
+	const std::string_view meme_string(argv[3]);
 	cimg_library::CImg<unsigned char> image(infile.data());
-	for (int i = 0; i < image.width(); i++) {
-		for (int j = 0; j < image.height(); j++) {
-			int total = 0;
-			for (int c = 0; c < image.spectrum(); c++) {
-				total += image(i, j, c);
-			}
+	ImageProcessor<unsigned char> processor(image, base_string.data());
+	auto res = processor.morph_image(meme_string.data());
 
-			double avg = total / image.spectrum();
-			for (int c = 0; c < image.spectrum(); c++) {
-				image(i, j, c) = avg;
-			}
-		}
-	}
-	image.display();
+	res.display();
 }
