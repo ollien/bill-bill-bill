@@ -68,16 +68,6 @@ int ImageProcessor<T>::get_read_cursor_position(int position) const {
 }
 
 /**
- * Sort the items in the range vector such that they are in the order they appeared in the original string
- * @param ranges The vector of ranges to sort
- */
-static void sort_range_vector(std::vector<std::pair<int, int>> &ranges) {
-	std::sort(ranges.begin(), ranges.end(), [](std::pair<int, int> a, std::pair<int, int> b) {
-		return a.first < b.first;
-	});
-}
-
-/**
  * Get the ranges in which the specifier exists in the base string.
  * @tparam The type of the pixels in the base image
  * @param specifier The string that should be used to generate the image
@@ -102,7 +92,7 @@ std::vector<std::pair<int, int>> ImageProcessor<T>::get_base_string_ranges(const
 			remaining.substr(0, pos_in_remaining) + remaining.substr(pos_in_remaining + base_string_substr.length());
 	}
 
-	sort_range_vector(ranges);
+	std::sort(ranges.begin(), ranges.end());
 
 	return ranges;
 }
