@@ -82,7 +82,7 @@ static void sort_range_vector(std::vector<std::pair<int, int>> &ranges) {
  * @tparam The type of the pixels in the base image
  * @param specifier The string that should be used to generate the image
  * @return std::vector<std::pair<int, int>> A vector of pairs representing the indices (start inclusive, end exclusive)
- * 										    in which a match occured
+ * 										    in which a match occurred
  */
 template <typename T>
 std::vector<std::pair<int, int>> ImageProcessor<T>::get_base_string_ranges(const std::string &specifier) const {
@@ -90,15 +90,13 @@ std::vector<std::pair<int, int>> ImageProcessor<T>::get_base_string_ranges(const
 	std::string remaining(specifier);
 	std::vector<std::pair<int, int>> ranges;
 	while (remaining.length()) {
-		std::pair<int, int> range = find_longest_common_substring(this->base_string, remaining);
-		// TODO: Maybe this should be optional?
-		if (range == std::pair<int, int>(0, 0)) {
+		auto range = find_longest_common_substring(this->base_string, remaining);
+		if (!range.has_value()) {
 			break;
 		}
 
-		ranges.push_back(range);
-		// TODO: This should have a test because it should probably be -1 on the len? not sure
-		auto base_string_substr = this->base_string.substr(range.first, range.second - range.first);
+		ranges.push_back(*range);
+		auto base_string_substr = this->base_string.substr(range->first, range->second - range->first);
 		auto pos_in_remaining = remaining.find(base_string_substr);
 		remaining =
 			remaining.substr(0, pos_in_remaining) + remaining.substr(pos_in_remaining + base_string_substr.length());

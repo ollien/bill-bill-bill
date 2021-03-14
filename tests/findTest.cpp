@@ -1,7 +1,8 @@
-#include "../src/find.h"
+#include <gmock/gmock.h>
+
 #include <utility>
 
-#include <gmock/gmock.h>
+#include "../src/find.h"
 
 TEST(StringFinder, FindsAtStartOfStirng) {
 	auto result = find_longest_common_substring("Hello", "HelloWorld");
@@ -26,14 +27,14 @@ TEST(StringFinder, FindsInMiddle) {
 
 TEST(StringFinder, MatchDoesNotExist) {
 	auto result = find_longest_common_substring("hello", ":(");
-	auto expected = std::pair<int, int>(0, 0);
+	auto expected = std::nullopt;
 
 	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, MatchOneStringEmpty) {
 	auto result = find_longest_common_substring("hello", "");
-	auto expected = std::pair<int, int>(0, 0);
+	auto expected = std::nullopt;
 
 	ASSERT_EQ(result, expected);
 }
