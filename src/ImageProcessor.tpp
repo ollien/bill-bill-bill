@@ -68,7 +68,7 @@ int ImageProcessor<T>::get_read_cursor_position(int position) const {
 }
 
 /**
- * Sort the items in the range vector such that they are in the order they appaeared in the original string
+ * Sort the items in the range vector such that they are in the order they appeared in the original string
  * @param ranges The vector of ranges to sort
  */
 static void sort_range_vector(std::vector<std::pair<int, int>> &ranges) {
