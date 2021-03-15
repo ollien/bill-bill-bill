@@ -42,7 +42,8 @@ static std::vector<std::vector<int>> make_substring_table(const std::string &a, 
  */
 template <typename T>
 static std::optional<std::pair<int, int>> get_largest_index(const std::vector<std::vector<T>> &table) {
-	if (table.size() == 0) {
+	// We expect that all rows should be of equal size, so we don't have to check every row to get nullopt
+	if (table.size() == 0 || table.at(0).size() == 0) {
 		return std::nullopt;
 	}
 
