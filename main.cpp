@@ -41,6 +41,7 @@ static void output_image(
 
 int main(int argc, char *argv[]) {
 	bool force_display = false;
+	bool show_help = false;
 	std::optional<std::string> output_location;
 	std::string in_file;
 	std::string base_string;
@@ -49,11 +50,24 @@ int main(int argc, char *argv[]) {
 	cxxopts::Options options("bill-bill-bill", "Morph an image into a substr-ed repeated variant.");
 	// clang-format off
 	options.add_options()
-		("d,display", "Display the image, even when an output is specified.", cxxopts::value(force_display))
-		("o,output", "The output filename for the image. Enabling disables display if --display is not specified", cxxopts::value<std::optional<std::string>>(output_location), "filename")
-		("in_file", "The input image", cxxopts::value<std::string>(in_file))
-		("base_string", "The string to morph from", cxxopts::value<std::string>(base_string))
-		("meme_string", "The string to morph to", cxxopts::value<std::string>(meme_string))
+		("d,display",
+		 "Display the image, even when an output is specified.",
+		 cxxopts::value(force_display))
+		("o,output",
+		 "The output filename for the image. Enabling disables display if --display is not specified.",
+		 cxxopts::value<std::optional<std::string>>(output_location), "filename")
+		("h",
+		 "Display help message",
+		 cxxopts::value(show_help))
+		("in_file",
+		 "The input image",
+		 cxxopts::value<std::string>(in_file))
+		("base_string",
+		 "The string to morph from",
+		 cxxopts::value<std::string>(base_string))
+		("meme_string",
+		 "The string to morph to",
+		 cxxopts::value<std::string>(meme_string))
 		;
 	//clang-format on
 
@@ -67,7 +81,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	if (in_file.empty() || base_string.empty() || meme_string.empty()) {
+	if (show_help || in_file.empty() || base_string.empty() || meme_string.empty()) {
 		std::cerr << options.help() << std::endl;
 		return 1;
 	}
