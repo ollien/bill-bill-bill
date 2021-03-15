@@ -24,22 +24,23 @@ static cimg_library::CImg<T> morph_image(
  * Output the image based on the input argument specifications
  *
  * @param resultingImage The image to output
- * @param should_display Whether or not the image should be displayed
- * @param output_location Where the file should be written to, if at all
+ * @param force_display Whether or not the image should be forcefully displayed
+ * @param output_location The file that should be written to, if at all
  */
 static void output_image(
-	cimg_library::CImg<unsigned char> resultingImage, bool should_display, std::optional<std::string> output_location) {
+	cimg_library::CImg<unsigned char> resultingImage, bool force_display, std::optional<std::string> output_location) {
 	if (output_location.has_value()) {
 		resultingImage.save(output_location->c_str());
 	}
 
-	if (should_display) {
+	// Do not display unless forced, or if there is no file to output to
+	if (force_display || !output_location.has_value()) {
 		resultingImage.display();
 	}
 }
 
 int main(int argc, char *argv[]) {
-	bool should_display = false;
+	bool force_display = false;
 	std::optional<std::string> output_location;
 	std::string in_file;
 	std::string base_string;
@@ -48,8 +49,8 @@ int main(int argc, char *argv[]) {
 	cxxopts::Options options("bill-bill-bill", "Morph an image into a substr-ed repeated variant.");
 	// clang-format off
 	options.add_options()
-		("d,display", "Display the image", cxxopts::value(should_display))
-		("o,output", "The output filename for the image", cxxopts::value<std::optional<std::string>>(output_location), "filename")
+		("d,display", "Display the image, even when an output is specified.", cxxopts::value(force_display))
+		("o,output", "The output filename for the image. Enabling disables display if --display is not specified", cxxopts::value<std::optional<std::string>>(output_location), "filename")
 		("in_file", "The input image", cxxopts::value<std::string>(in_file))
 		("base_string", "The string to morph from", cxxopts::value<std::string>(base_string))
 		("meme_string", "The string to morph to", cxxopts::value<std::string>(meme_string))
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]) {
 	auto morphed_image = morph_image(*image, base_string, meme_string);
 
 	try {
-		output_image(morphed_image, should_display, output_location);
+		output_image(morphed_image, force_display, output_location);
 		return 0;
 	} catch (const cimg_library::CImgIOException &e) {
 		std::cerr << "Failed to write image: " << e.what() << std::endl;
