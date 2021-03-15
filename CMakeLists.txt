@@ -12,4 +12,5 @@ add_subdirectory(tests)
 # Deps
 find_package(Threads REQUIRED)
 find_package(X11 REQUIRED)
+find_package(cxxopts REQUIRED)
 target_link_libraries(bill-bill-bill PRIVATE Threads::Threads X11 src)
