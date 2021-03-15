@@ -67,6 +67,27 @@ int ImageProcessor<T>::get_read_cursor_position(int position) const {
 	return std::ceil(1.0 * this->base_image.height() * position / this->base_string.length());
 }
 
+// TODO: This should be moved into find.h
+using Range = std::pair<int, int>;
+
+/**
+ * Sort the ranges based on the relative specified by the first pair element
+ * @param ordered_ranges A vector of ranges that has a relative order as the first item
+ * @return std::vector<Range> The ordered ranges
+ */
+static std::vector<Range> sort_specifier_ranges(std::vector<std::pair<int, Range>> &ordered_ranges) {
+	std::sort(ordered_ranges.begin(), ordered_ranges.end());
+	std::vector<Range> ranges;
+	ranges.reserve(ordered_ranges.size());
+	std::transform(
+		ordered_ranges.cbegin(),
+		ordered_ranges.cend(),
+		std::back_inserter(ranges),
+		[](const auto &ordinal_pair) { return ordinal_pair.second; });
+
+	return ranges;
+}
+
 /**
  * Get the ranges in which the specifier exists in the base string.
  * @tparam The type of the pixels in the base image
@@ -75,24 +96,25 @@ int ImageProcessor<T>::get_read_cursor_position(int position) const {
  * 										    in which a match occurred
  */
 template <typename T>
-std::vector<std::pair<int, int>> ImageProcessor<T>::get_base_string_ranges(const std::string &specifier) const {
+std::vector<typename ImageProcessor<T>::Range> ImageProcessor<T>::get_base_string_ranges(
+	const std::string &specifier) const {
 	// I would love for this to be a string_view but we can't concat string_views :(
 	std::string remaining(specifier);
-	std::vector<std::pair<int, int>> ranges;
+	std::vector<std::pair<int, Range>> range_orders;
 	while (remaining.length()) {
 		auto range = find_longest_common_substring(this->base_string, remaining);
 		if (!range.has_value()) {
 			break;
 		}
 
-		ranges.push_back(*range);
 		auto base_string_substr = this->base_string.substr(range->first, range->second - range->first);
+		auto pos_in_specifier = specifier.find(base_string_substr);
+		range_orders.push_back(std::make_pair(pos_in_specifier, *range));
+
 		auto pos_in_remaining = remaining.find(base_string_substr);
 		remaining =
 			remaining.substr(0, pos_in_remaining) + remaining.substr(pos_in_remaining + base_string_substr.length());
 	}
 
-	std::sort(ranges.begin(), ranges.end());
-
-	return ranges;
+	return sort_specifier_ranges(range_orders);
 }
