@@ -89,6 +89,19 @@ static std::vector<Range> sort_specifier_ranges(std::vector<std::pair<int, Range
 }
 
 /**
+ * Set a substr of a target string to a given fill character
+ * @param target The target string to output to
+ * @param fill_char The character to fill
+ * @param start_pos The position where the fill should start
+ * @param n The number of characetrs to fill
+ */
+static void set_substr_to_char(std::string &target, char fill_char, int start_pos, int n) {
+	for (int i = 0; i < n; i++) {
+		target.at(start_pos + i) = fill_char;
+	}
+}
+
+/**
  * Get the ranges in which the specifier exists in the base string.
  * @tparam The type of the pixels in the base image
  * @param specifier The string that should be used to generate the image
@@ -98,8 +111,10 @@ static std::vector<Range> sort_specifier_ranges(std::vector<std::pair<int, Range
 template <typename T>
 std::vector<typename ImageProcessor<T>::Range> ImageProcessor<T>::get_base_string_ranges(
 	const std::string &specifier) const {
-	// I would love for this to be a string_view but we can't concat string_views :(
+	// The portions of the specifier string that have not been used, concatened together
 	std::string remaining(specifier);
+	// The portions of the specifier string, with chars zeroed out that have already been used
+	std::string unused_specifier_portions(specifier);
 	std::vector<std::pair<int, Range>> range_orders;
 	while (remaining.length()) {
 		auto range = find_longest_common_substring(this->base_string, remaining);
@@ -107,11 +122,14 @@ std::vector<typename ImageProcessor<T>::Range> ImageProcessor<T>::get_base_strin
 			break;
 		}
 
-		auto base_string_substr = this->base_string.substr(range->first, range->second - range->first);
-		auto pos_in_specifier = specifier.find(base_string_substr);
-		range_orders.push_back(std::make_pair(pos_in_specifier, *range));
-
+		auto length = range->second - range->first;
+		auto base_string_substr = this->base_string.substr(range->first, length);
+		auto pos_in_specifier = unused_specifier_portions.find(base_string_substr);
 		auto pos_in_remaining = remaining.find(base_string_substr);
+
+		range_orders.push_back(std::make_pair(pos_in_specifier, *range));
+		set_substr_to_char(unused_specifier_portions, '\0', pos_in_specifier, length);
+
 		remaining =
 			remaining.substr(0, pos_in_remaining) + remaining.substr(pos_in_remaining + base_string_substr.length());
 	}
