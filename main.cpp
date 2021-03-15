@@ -95,7 +95,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	auto morphed_image = morph_image(*image, base_string, meme_string);
-
 	try {
 		output_image(morphed_image, force_display, output_location);
 		return 0;
