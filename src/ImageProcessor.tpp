@@ -67,17 +67,15 @@ int ImageProcessor<T>::get_read_cursor_position(int position) const {
 	return std::ceil(1.0 * this->base_image.height() * position / this->base_string.length());
 }
 
-// TODO: This should be moved into find.h
-using Range = std::pair<int, int>;
-
 /**
  * Sort the ranges based on the relative specified by the first pair element
  * @param ordered_ranges A vector of ranges that has a relative order as the first item
  * @return std::vector<Range> The ordered ranges
  */
-static std::vector<Range> sort_specifier_ranges(std::vector<std::pair<int, Range>> &ordered_ranges) {
+static std::vector<StringIndexRange> sort_specifier_ranges(
+	std::vector<std::pair<int, StringIndexRange>> &ordered_ranges) {
 	std::sort(ordered_ranges.begin(), ordered_ranges.end());
-	std::vector<Range> ranges;
+	std::vector<StringIndexRange> ranges;
 	ranges.reserve(ordered_ranges.size());
 	std::transform(
 		ordered_ranges.cbegin(),
@@ -109,13 +107,12 @@ static void set_substr_to_char(std::string &target, char fill_char, int start_po
  * 										    in which a match occurred
  */
 template <typename T>
-std::vector<typename ImageProcessor<T>::Range> ImageProcessor<T>::get_base_string_ranges(
-	const std::string &specifier) const {
+std::vector<StringIndexRange> ImageProcessor<T>::get_base_string_ranges(const std::string &specifier) const {
 	// The portions of the specifier string that have not been used, concatened together
 	std::string remaining(specifier);
 	// The portions of the specifier string, with chars zeroed out that have already been used
 	std::string unused_specifier_portions(specifier);
-	std::vector<std::pair<int, Range>> range_orders;
+	std::vector<std::pair<int, StringIndexRange>> range_orders;
 	while (remaining.length()) {
 		auto range = find_longest_common_substring(this->base_string, remaining);
 		if (!range.has_value()) {

@@ -78,7 +78,7 @@ static std::optional<std::pair<int, int>> get_largest_index(const std::vector<st
  * @return const std::pair<int, int> The range at which this substring exists, including the start, excluding the end.
  * 									 If no match is found, this will be an empty optional
  */
-std::optional<std::pair<int, int>> find_longest_common_substring(const std::string &a, const std::string &b) {
+std::optional<StringIndexRange> find_longest_common_substring(const std::string &a, const std::string &b) {
 	auto table = make_substring_table(a, b);
 	auto max_index = get_largest_index(table);
 	if (!max_index.has_value()) {

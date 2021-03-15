@@ -5,6 +5,39 @@
 
 #include "src/ImageProcessor.h"
 
+/**
+ * Morph the image into its susbtring-ified form
+ * @tparam T The type of pixels stored in the image
+ * @param input_image The image to morph
+ * @param base_string The string to morph based on
+ * @param meme_string The string whose components will be used to generate the final image
+ * @return cimg_library::CImg<T> The morphed image
+ */
+template <typename T>
+static cimg_library::CImg<T> morph_image(
+	cimg_library::CImg<T> input_image, const std::string &base_string, const std::string &meme_string) {
+	ImageProcessor<unsigned char> processor(input_image, base_string);
+	return processor.morph_image(meme_string);
+}
+
+/**
+ * Output the image based on the input argument specifications
+ *
+ * @param resultingImage The image to output
+ * @param should_display Whether or not the image should be displayed
+ * @param output_location Where the file should be written to, if at all
+ */
+static void output_image(
+	cimg_library::CImg<unsigned char> resultingImage, bool should_display, std::optional<std::string> output_location) {
+	if (output_location.has_value()) {
+		resultingImage.save(output_location->c_str());
+	}
+
+	if (should_display) {
+		resultingImage.display();
+	}
+}
+
 int main(int argc, char *argv[]) {
 	bool should_display = false;
 	std::optional<std::string> output_location;
@@ -33,7 +66,12 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	cimg_library::CImg<unsigned char> image;
+	if (in_file.empty() || base_string.empty() || meme_string.empty()) {
+		std::cerr << options.help() << std::endl;
+		return 1;
+	}
+
+	std::optional<cimg_library::CImg<unsigned char>> image;
 	try {
 		image = cimg_library::CImg<unsigned char>(in_file.c_str());
 	} catch (const cimg_library::CImgIOException &e) {
@@ -41,18 +79,13 @@ int main(int argc, char *argv[]) {
 		return 2;
 	}
 
-	ImageProcessor<unsigned char> processor(image, base_string.data());
-	auto res = processor.morph_image(meme_string.data());
-	if (should_display) {
-		res.display();
-	}
+	auto morphed_image = morph_image(*image, base_string, meme_string);
 
-	if (output_location.has_value()) {
-		try {
-			res.save(output_location->c_str());
-		} catch (const cimg_library::CImgIOException &e) {
-			std::cerr << "Failed to write image: " << e.what() << std::endl;
-			return 3;
-		}
+	try {
+		output_image(morphed_image, should_display, output_location);
+		return 0;
+	} catch (const cimg_library::CImgIOException &e) {
+		std::cerr << "Failed to write image: " << e.what() << std::endl;
+		return 3;
 	}
 }
