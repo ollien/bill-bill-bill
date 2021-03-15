@@ -85,8 +85,8 @@ std::optional<std::pair<int, int>> find_longest_common_substring(const std::stri
 		return std::nullopt;
 	}
 
-	int a_end = max_index.value().first;
-	int len = table.at(a_end).at(max_index.value().second);
+	int end_pos_in_a = max_index->first;
+	int len = table.at(end_pos_in_a).at(max_index->second);
 
-	return std::make_pair(a_end - (len - 1), a_end + 1);
+	return std::make_pair(end_pos_in_a - (len - 1), end_pos_in_a + 1);
 }

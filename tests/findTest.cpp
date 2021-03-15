@@ -6,21 +6,21 @@
 
 TEST(StringFinder, FindsAtStartOfStirng) {
 	auto result = find_longest_common_substring("Hello", "HelloWorld");
-	auto expected = std::pair<int, int>(0, 5);
+	auto expected = std::make_pair(0, 5);
 
 	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, FindsEqualStrings) {
 	auto result = find_longest_common_substring("Hello", "Hello");
-	auto expected = std::pair<int, int>(0, 5);
+	auto expected = std::make_pair(0, 5);
 
 	ASSERT_EQ(result, expected);
 }
 
 TEST(StringFinder, FindsInMiddle) {
 	auto result = find_longest_common_substring("AAABBAAA", "ABBA");
-	auto expected = std::pair<int, int>(2, 6);
+	auto expected = std::make_pair(2, 6);
 
 	ASSERT_EQ(result, expected);
 }
