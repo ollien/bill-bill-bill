@@ -20,8 +20,8 @@
 static std::vector<std::vector<int>> make_substring_table(const std::string &a, const std::string &b) {
 	std::vector<int> empty_row(b.length(), 0);
 	std::vector<std::vector<int>> table(a.length(), empty_row);
-	for (int i = 0; i < a.length(); i++) {
-		for (int j = 0; j < b.length(); j++) {
+	for (std::size_t i = 0; i < a.length(); i++) {
+		for (std::size_t j = 0; j < b.length(); j++) {
 			if (a.at(i) == b.at(j)) {
 				table.at(i).at(j) = j > 0 && i > 0 ? table.at(i - 1).at(j - 1) + 1 : 1;
 			}
