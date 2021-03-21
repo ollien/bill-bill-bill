@@ -7,6 +7,10 @@
 
 #include "find.hpp"
 
+/**
+ * Process an image for morphing
+ * @tparam T The type of pixels stored in the image
+ */
 template <typename T>
 class ImageProcessor {
  public:
