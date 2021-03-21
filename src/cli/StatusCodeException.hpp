@@ -22,8 +22,8 @@ class StatusCodeException : public std::exception {
 	int get_status_code() const noexcept;
 
  private:
-	std::string message;
 	int status_code;
+	std::string message;
 };
 
 #endif

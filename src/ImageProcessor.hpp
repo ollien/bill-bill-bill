@@ -30,8 +30,8 @@ class ImageProcessor {
 	cimg_library::CImg<T> morph_image(const std::string &specifier) const;
 
  private:
-	std::string base_string;
 	cimg_library::CImg<T> base_image;
+	std::string base_string;
 
 	std::vector<StringIndexRange> get_base_string_ranges(const std::string &specifier) const;
 	cimg_library::CImg<T> splice_image(const std::vector<std::pair<int, int>> &string_ranges) const;

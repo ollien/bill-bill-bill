@@ -122,7 +122,7 @@ std::vector<StringIndexRange> ImageProcessor<T>::get_base_string_ranges(const st
 		auto length = range->second - range->first;
 		auto base_string_substr = this->base_string.substr(range->first, length);
 		auto pos_in_specifier = unused_specifier_portions.find(base_string_substr);
-		if (pos_in_specifier == -1) {
+		if (pos_in_specifier == std::string::npos) {
 			// Prioritize finding a string in the unused specifier portions, but if we can't, then just take it from the
 			// specifier
 			pos_in_specifier = specifier.find(base_string_substr);
