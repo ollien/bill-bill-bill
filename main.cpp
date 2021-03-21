@@ -4,6 +4,21 @@
 #include <iostream>
 
 #include "src/ImageProcessor.hpp"
+#include "src/cli/StatusCodeException.hpp"
+
+/**
+ * Open the given image.
+ *
+ * This is primarily in its own method just for consistency when using StatusCodeExceptions. It is not _really_ needed.
+ *
+ * @param filename The image to open
+ * @return cimg_library::CImg<unsigned char> The opened image
+ */
+static cimg_library::CImg<unsigned char> open_image(const std::string &filename) try {
+	return cimg_library::CImg<unsigned char>(filename.c_str());
+} catch (const cimg_library::CImgIOException &e) {
+	throw StatusCodeException(2, std::string("Failed to open image: ") + e.what());
+}
 
 /**
  * Morph the image into its susbtring-ified form
@@ -15,9 +30,11 @@
  */
 template <typename T>
 static cimg_library::CImg<T> morph_image(
-	cimg_library::CImg<T> input_image, const std::string &base_string, const std::string &meme_string) {
+	cimg_library::CImg<T> input_image, const std::string &base_string, const std::string &meme_string) try {
 	ImageProcessor<unsigned char> processor(input_image, base_string);
 	return processor.morph_image(meme_string);
+} catch (const std::exception &e) {
+	throw StatusCodeException(3, std::string("Failed to process image: ") + e.what());
 }
 
 /**
@@ -28,7 +45,9 @@ static cimg_library::CImg<T> morph_image(
  * @param output_location The file that should be written to, if at all
  */
 static void output_image(
-	cimg_library::CImg<unsigned char> resultingImage, bool force_display, std::optional<std::string> output_location) {
+	cimg_library::CImg<unsigned char> resultingImage,
+	bool force_display,
+	std::optional<std::string> output_location) try {
 	if (output_location.has_value()) {
 		resultingImage.save(output_location->c_str());
 	}
@@ -37,9 +56,11 @@ static void output_image(
 	if (force_display || !output_location.has_value()) {
 		resultingImage.display();
 	}
+} catch (const cimg_library::CImgIOException &e) {
+	throw StatusCodeException(4, std::string("Failed to output image: ") + e.what());
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) try {
 	bool force_display = false;
 	bool show_help = false;
 	std::optional<std::string> output_location;
@@ -47,6 +68,8 @@ int main(int argc, char *argv[]) {
 	std::string base_string;
 	std::string meme_string;
 
+	// Disable Cimg error messages; we print them ourselves
+	cimg_library::cimg::exception_mode(0);
 	cxxopts::Options options("bill-bill-bill", "Morph an image into a substr-ed repeated variant.");
 	// clang-format off
 	options.add_options()
@@ -86,20 +109,12 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	std::optional<cimg_library::CImg<unsigned char>> image;
-	try {
-		image = cimg_library::CImg<unsigned char>(in_file.c_str());
-	} catch (const cimg_library::CImgIOException &e) {
-		std::cerr << "Failed to open image: " << e.what() << std::endl << std::endl;
-		return 2;
-	}
+	auto image = open_image(in_file);
+	auto morphed_image = morph_image(image, base_string, meme_string);
+	output_image(morphed_image, force_display, output_location);
 
-	auto morphed_image = morph_image(*image, base_string, meme_string);
-	try {
-		output_image(morphed_image, force_display, output_location);
-		return 0;
-	} catch (const cimg_library::CImgIOException &e) {
-		std::cerr << "Failed to write image: " << e.what() << std::endl;
-		return 3;
-	}
+	return 0;
+} catch (const StatusCodeException &e) {
+	std::cerr << e.what() << std::endl;
+	return e.get_status_code();
 }
