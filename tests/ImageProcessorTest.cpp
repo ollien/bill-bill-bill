@@ -1,4 +1,4 @@
-#include "../src/ImageProcessor.h"
+#include "../src/ImageProcessor.hpp"
 #include <CImg.h>
 #include <optional>
 #include <utility>

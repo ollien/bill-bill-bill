@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "../src/find.h"
+#include "../src/find.hpp"
 
 TEST(StringFinder, FindsAtStartOfStirng) {
 	auto result = find_longest_common_substring("Hello", "HelloWorld");

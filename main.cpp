@@ -3,7 +3,7 @@
 #include <cxxopts.hpp>
 #include <iostream>
 
-#include "src/ImageProcessor.h"
+#include "src/ImageProcessor.hpp"
 
 /**
  * Morph the image into its susbtring-ified form

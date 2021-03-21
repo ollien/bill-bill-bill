@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "find.h"
+#include "find.hpp"
 
 /**
  * Morph the image into one that takes the specifier string, and uses substring positions to take portions of the image.

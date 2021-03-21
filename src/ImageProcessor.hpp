@@ -2,8 +2,10 @@
 #define IMAGEPROCESSOR_H
 
 #include <CImg.h>
+
 #include <string>
-#include "find.h"
+
+#include "find.hpp"
 
 template <typename T>
 class ImageProcessor {
