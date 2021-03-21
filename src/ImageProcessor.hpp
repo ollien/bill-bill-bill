@@ -10,8 +10,17 @@
 template <typename T>
 class ImageProcessor {
  public:
-	ImageProcessor<T>(const cimg_library::CImg<T> &base_image, const std::string &base_string)
-		: base_image(base_image), base_string(base_string) {
+	/**
+	 * Construct a new ImageProcessor with an image to process and a base string that represents its contents
+	 *
+	 * @param base_image The image to copy
+	 * @param base_string The string that represents the image. For a string of length n, each character represents a
+	 * 					  portion equal to image_height/n pixels.
+	 */
+	ImageProcessor<T>(const cimg_library::CImg<T> &base_image, std::string base_string)
+		: base_image(base_image),  // This cannot be a move (or a by-value pass), as we can't make assumptions about
+								   // CImg's move construction (see Effective Modern C++ Item 28).
+		  base_string(std::move(base_string)) {
 	}
 
 	cimg_library::CImg<T> morph_image(const std::string &specifier) const;
