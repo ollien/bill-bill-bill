@@ -16,7 +16,7 @@ jobs:
           wget https://github.com/jarro2783/cxxopts/archive/refs/tags/v2.2.1.tar.gz -O cxxopts-2.2.1.tar.gz
           tar xf cxxopts-2.2.1.tar.gz
           mkdir cxxopts-2.2.1/build && cd cxxopts-2.2.1/build
-          cmake ..
+          cmake .. -DCXXOPTS_BUILD_TESTS=OFF -DCXXOPTS_BUILD_EXAMPLES=OFF -DCXXOPTS_ENABLE_INSTALL=ON
           make
           sudo make install
       - name: Checkout repository
