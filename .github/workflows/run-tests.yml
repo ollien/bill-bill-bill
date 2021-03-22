@@ -1,0 +1,31 @@
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install apt dependencies
+        run: |
+          sudo apt update
+          sudo apt-get install -y cmake build-essential libx11-dev cimg-dev libgtest-dev wget
+      # This is not available in apt for reason, so we must build it by hand
+      # (Really, this is being built for its cmake files, since it's a header only lib)
+      - name: Install cxxopts
+        run: |
+          wget https://github.com/jarro2783/cxxopts/archive/refs/tags/v2.2.1.tar.gz -O cxxopts-2.2.1.tar.gz
+          tar xf cxxopts-2.2.1.tar.gz
+          mkdir cxxopts-2.2.1/build && cd cxxopts-2.2.1/build
+          cmake ..
+          make
+          sudo make install
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake ..
+          make all
+      - name: Run tests
+        working-directory: build
+        run: tests/tests
