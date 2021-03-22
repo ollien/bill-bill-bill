@@ -1,9 +1,9 @@
+#include <CImg.h>
+
 #include <cmath>
-#include <execution>
 #include <iostream>
 #include <numeric>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
