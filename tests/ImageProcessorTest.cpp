@@ -1,19 +1,20 @@
-#include "../src/ImageProcessor.hpp"
 #include <CImg.h>
+
 #include <optional>
 #include <utility>
+
+#include "../src/ImageProcessor.hpp"
 // This is a _HACK_. Both LibX11 (depended on by CImg) and Gtest define None and Bool, so we must undefine them.
 #undef None
 #undef Bool
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 class ImageProcessorTest : public ::testing::Test {
-  public:
+ public:
 	static constexpr char base_string[] = "Hello World";
 
-  protected:
+ protected:
 	std::optional<cimg_library::CImg<unsigned char>> image;
 	std::optional<ImageProcessor<unsigned char>> imageProcessor;
 
@@ -23,7 +24,7 @@ class ImageProcessorTest : public ::testing::Test {
 		this->imageProcessor = ImageProcessor<unsigned char>(*(this->image), this->base_string);
 	}
 
-  private:
+ private:
 	void fillImage(cimg_library::CImg<unsigned char> &image) const {
 		for (int i = 0; i < image.width(); i++) {
 			for (int j = 0; j < image.height(); j++) {
@@ -36,7 +37,7 @@ class ImageProcessorTest : public ::testing::Test {
 };
 
 class ImageProcessorStringParamTest : public ImageProcessorTest, public ::testing::WithParamInterface<std::string> {
-  protected:
+ protected:
 	std::string param;
 };
 
