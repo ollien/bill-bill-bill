@@ -1,8 +1,8 @@
 on: [push, pull_request]
 
 jobs:
-  build:
-    name: Run Unit Tests
+  setup_deps:
+    name: Setup dependencies
     runs-on: ubuntu-20.04
     steps:
       - name: Install apt dependencies
@@ -16,20 +16,32 @@ jobs:
           wget https://github.com/jarro2783/cxxopts/archive/refs/tags/v2.2.1.tar.gz -O cxxopts-2.2.1.tar.gz
           tar xf cxxopts-2.2.1.tar.gz
           mkdir -p cxxopts-2.2.1/build && cd cxxopts-2.2.1/build
-          cmake ..
+          cmake .. -DCXXOPTS_STANDALONE_PROJECT=ON
           make
           sudo make install
+  build:
+    name: Build
+    needs: setup_deps
+    runs-on: ubuntu-20.04
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Build
         run: |
           mkdir -p build && cd build
           cmake ..
-          make all
+          make tests
+      - name: Upload Build Output
+        uses: actions/upload-artifact@v2
+        with:
+          path: tests/tests
   tests:
+    name: Run unit tests
     needs: build
     runs-on: ubuntu-20.04
     steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
       - name: Run tests
         working-directory: build
         run: tests/tests
