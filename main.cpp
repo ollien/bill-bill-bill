@@ -1,6 +1,10 @@
 #include <CImg.h>
-
+// Workaround for https://github.com/jarro2783/cxxopts/issues/303
+// clang-format off
+#include <version>
 #include <cxxopts.hpp>
+
+// clang-format on
 #include <iostream>
 
 #include "src/ImageProcessor.hpp"
