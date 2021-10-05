@@ -26,9 +26,9 @@ class ImageProcessorTest : public ::testing::Test {
 
  private:
 	void fillImage(cimg_library::CImg<unsigned char> &image) const {
-		for (int i = 0; i < image.width(); i++) {
-			for (int j = 0; j < image.height(); j++) {
-				for (int c = 0; c < image.spectrum(); c++) {
+		for (auto i = 0; i < image.width(); i++) {
+			for (auto j = 0; j < image.height(); j++) {
+				for (auto c = 0; c < image.spectrum(); c++) {
 					image(i, j, c) = (i * j + j) % 255;
 				}
 			}
@@ -47,15 +47,15 @@ TEST_F(ImageProcessorTest, FullStringCopiesFullImage) {
 }
 
 TEST_F(ImageProcessorTest, EmptyStringGivesEmptyImage) {
-	cimg_library::CImg<unsigned char> res = imageProcessor->morph_image("");
-	cimg_library::CImg<unsigned char> expected(image->width(), static_cast<int>(0));
+	const auto res = imageProcessor->morph_image("");
+	const auto expected = cimg_library::CImg<unsigned char>(image->width(), static_cast<int>(0));
 
 	ASSERT_EQ(res, expected);
 }
 
 TEST_P(ImageProcessorStringParamTest, StringPortionHasExpectedSize) {
-	std::string specifier = GetParam();
-	int expected_height = image->height() * specifier.length() / std::char_traits<char>::length(base_string);
+	const auto specifier = GetParam();
+	const auto expected_height = image->height() * specifier.length() / std::char_traits<char>::length(base_string);
 	cimg_library::CImg<unsigned char> res = imageProcessor->morph_image(specifier);
 
 	ASSERT_EQ(res.height(), expected_height);

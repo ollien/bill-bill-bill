@@ -79,14 +79,14 @@ static std::optional<std::pair<int, int>> get_largest_index(const std::vector<st
  * 									 If no match is found, this will be an empty optional
  */
 std::optional<StringIndexRange> find_longest_common_substring(const std::string &a, const std::string &b) {
-	auto table = make_substring_table(a, b);
-	auto max_index = get_largest_index(table);
+	const auto table = make_substring_table(a, b);
+	const auto max_index = get_largest_index(table);
 	if (!max_index.has_value()) {
 		return std::nullopt;
 	}
 
-	int end_pos_in_a = max_index->first;
-	int len = table.at(end_pos_in_a).at(max_index->second);
+	const auto end_pos_in_a = max_index->first;
+	const auto len = table.at(end_pos_in_a).at(max_index->second);
 
 	return std::make_pair(end_pos_in_a - (len - 1), end_pos_in_a + 1);
 }
